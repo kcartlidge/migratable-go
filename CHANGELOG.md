@@ -4,3 +4,4 @@
   - Initial project creation
   - Standard repo files added
   - Command argument parsing
+  - Loading migrations

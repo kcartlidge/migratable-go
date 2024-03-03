@@ -18,6 +18,11 @@ func main() {
 	if err == nil {
 		// Action it.
 		c.describe()
+		var m *migrations
+		m, err = loadMigrations(c.folder)
+		if err == nil {
+			fmt.Printf("  Migrations loaded: %v\n", len(*m))
+		}
 	}
 
 	// Handle any errors bubbled up.
