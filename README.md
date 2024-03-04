@@ -16,6 +16,9 @@ The initial release is for _PostgreSQL_ only.
   - [Command arguments](#command-arguments)
   - [Supported actions](#supported-actions)
   - [Example commands](#example-commands)
+- [Generating new builds](#generating-new-builds)
+  - [Creating new releases](#creating-new-releases)
+  - [One-off builds during development](#one-off-builds-during-development)
 
 ## About database migrations
 
@@ -98,3 +101,50 @@ variable containing the database connection string. The
 variable should be UPPERCASE in your environment; the name
 passed in will be treated as such when checking.
 
+---
+
+## Generating new builds
+
+_This should only be necessary if you are making changes
+to Migratable itself.  As a user of Migratable you can
+use the existing builds mentioned earlier._
+
+**Note:** if you are unable to run the scripts ensure they
+are executable (on Linux or Mac) by using `chmod`.  For example
+`chmod +x cmd/scripts/linux.sh` will do the Linux one.
+
+- There are scripts for Linux, Windows, Mac (Intel), and Mac (ARM)
+- Run the script that relates to _your_ current platform
+- Each script generates the builds for _all_ the platforms
+- You _must_ run the scripts from within the `cmd` folder
+- Builds are small and should be checked in
+  - Only generate new builds when new releases are needed
+
+### Creating new releases
+
+Run the relevant script for _your_ system.
+
+``` shell
+cd cmd
+./scripts/linux.sh
+./scripts/mac.sh
+scripts\windows
+```
+
+### One-off builds during development
+
+When development is completed you use the above-mentioned
+scripts to generate a full set of releases.
+
+However _during_ your development you probably want a quicker
+turnaround so from the following commands you can quickly
+create a new  version by picking according to your _current_
+system.
+
+``` shell
+cd cmd
+go build -o ../builds/macos/migratable
+go build -o ../builds/macos-x64/migratable
+go build -o ../builds/linux/migratable
+go build -o ../builds/windows/migratable.exe
+```
