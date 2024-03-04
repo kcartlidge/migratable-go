@@ -39,7 +39,6 @@ func getConfig() (*config, error) {
 	// Check the requested action.
 	switch c.action {
 	case "info":
-	case "list":
 	case "reset":
 	case "latest":
 	case "next":
@@ -75,8 +74,6 @@ func (c *config) usage() {
 	fmt.Println()
 	fmt.Println("ACTIONS")
 	fmt.Println("  info       Show migration status")
-	fmt.Println("  list       List known migrations")
-	fmt.Println("")
 	fmt.Println("  reset      Remove all migrations")
 	fmt.Println("  latest     Apply new migrations")
 	fmt.Println("  next       Roll forward one migration")
@@ -87,7 +84,6 @@ func (c *config) usage() {
 
 // describe details what has been requested.
 func (c *config) describe() {
-	fmt.Println()
 	fmt.Println("REQUESTED")
 	fmt.Println("  Action:   ", c.action)
 	if c.action == "target" {

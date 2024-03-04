@@ -13,6 +13,7 @@ The initial release is for _PostgreSQL_ only.
 - [About database migrations](#about-database-migrations)
   - [Example migration scripts structure](#example-migration-scripts-structure)
 - [Usage](#usage)
+  - [Example connection string](#example-connection-string)
   - [Command arguments](#command-arguments)
   - [Supported actions](#supported-actions)
   - [Example commands](#example-commands)
@@ -69,6 +70,22 @@ all changes should be done via Migratable and not by hand as that
 will cause Migratable's opinion of the database state and the
 underlying reality to fall out of sync.
 
+### Example connection string
+
+Mac and Linux
+
+``` shell
+export MIGRATABLE="host=127.0.0.1 port=5432 dbname=example user=example password=example sslmode=disable"
+```
+
+Windows
+
+``` shell
+set MIGRATABLE=host=127.0.0.1 port=5432 dbname=example user=example password=example sslmode=disable
+```
+
+Note that the Windows version does _not_ include double-quotes.
+
 ### Command arguments
 
 - `<folder>` - location of your migration scripts
@@ -79,7 +96,6 @@ underlying reality to fall out of sync.
 ### Supported actions
 
 - `info` - show migration status
-- `list` - list known migrations
 - `reset` - remove all migrations (and tracking table)
 - `latest` - apply new migrations
 - `next` - roll forward one migration
