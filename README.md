@@ -56,6 +56,9 @@ The migration version (the leading digits in the folder name)
 can be separated from the migration name that follows by any
 non-digit character. Leading zeroes are optional.
 
+There's a set of [example migrations](./cmd/sample-migrations)
+in the project.
+
 ## Usage
 
 - Place your connection string into an environment variable
@@ -105,11 +108,11 @@ Note that the Windows version does _not_ include double-quotes.
 ### Example commands
 
 ``` shell
-migratable ~/migrations MIGRATABLE info      # shows current state
-migratable ~/migrations MIGRATABLE list      # shows loaded migrations
-migratable ~/migrations MIGRATABLE target 3  # moves forward/back to v3
-migratable ~/migrations MIGRATABLE latest    # ensures all applied
-migratable ~/migrations MIGRATABLE reset     # removes all traces
+cd cmd
+migratable ./sample-migrations MIGRATABLE info      # shows current state
+migratable ./sample-migrations MIGRATABLE target 3  # moves forward/back to v3
+migratable ./sample-migrations MIGRATABLE latest    # ensures all applied
+migratable ./sample-migrations MIGRATABLE reset     # removes all traces
 ```
 
 In the above, `MIGRATABLE` is the name of an environment
@@ -162,5 +165,5 @@ cd cmd
 go build -o ../builds/macos/migratable
 go build -o ../builds/macos-x64/migratable
 go build -o ../builds/linux/migratable
-go build -o ../builds/windows/migratable.exe
+go build -o ..\builds\windows\migratable.exe
 ```
