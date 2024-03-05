@@ -1,17 +1,21 @@
-# MIGRATABLE
+# MIGRATABLE v1.0.0
 
-Command-line database migrations using up/down SQL files.
+**Command-line database migrations using up/down SQL files.
 Simple, with stand-alone executables small enough to commit
-to your own repos alongside your code.
-The initial release is for _PostgreSQL_ only.
+to your own repos alongside your code.**
+
+_The initial release is for PostgreSQL only._
 
 - [AGPL license](./LICENSE.txt)
 - [CHANGELOG](./CHANGELOG.md)
+
+Copyright 2024 K Cartlidge.
 
 ## Contents
 
 - [About database migrations](#about-database-migrations)
   - [Example migration scripts structure](#example-migration-scripts-structure)
+- [Download and installation](#download-and-installation)
 - [Usage](#usage)
   - [Example connection string](#example-connection-string)
   - [Command arguments](#command-arguments)
@@ -40,6 +44,16 @@ Once you have reached the point where you are dealing with real
 data you use it for structural changes like adding indexes or
 extra columns, or for adding things to look-up lists etc.
 
+- Pre-built binaries; not dependent on Go
+- It fits any ecosystem (eg Go, Python, Node, .Net etc)
+- And it's easy to configure, needing only:
+  - A connection string in an environment variable
+  - A folder with named migrations using up/down SQL scripts
+- Your database structure can be version-controlled
+- Roll your database backwards as well as forwards
+- Seed/pre-populate, update, or remove data
+- Run in transactions for atomic up/down
+
 ### Example migration scripts structure
 
 ```
@@ -59,10 +73,26 @@ non-digit character. Leading zeroes are optional.
 There's a set of [example migrations](./cmd/sample-migrations)
 in the project.
 
+## Download and installation
+
+_There is no installation needed._
+
+Download the appropriate version from the list below and
+run it directly from the command line/terminal.
+
+- [Download for Linux](./builds/linux/)
+- [Download for Windows](./builds/windows/)
+- [Download for Mac (Apple Silicon)](./builds/macos/)
+- [Download for Mac (Intel)](./builds/macos-x64/)
+
+Migratable is standalone and small, so you can place a copy
+of the download into any repo/codebase that is using it and
+thereby guarantee it will always be available to your code
+and any build tool-chain.
+
 ## Usage
 
 - Place your connection string into an environment variable
-- Run the appropriate version from the [`builds``](./builds) folder
 - Specify the environment variable name when calling Migratable
 - You can test your connection using the `info` action (see below)
 
@@ -78,16 +108,18 @@ underlying reality to fall out of sync.
 Mac and Linux
 
 ``` shell
-export MIGRATABLE="host=127.0.0.1 port=5432 dbname=example user=example password=example sslmode=disable"
+export MIGRATABLE="host=127.0.0.1 port=5432 dbname=example search_path=example user=example password=example sslmode=disable"
 ```
 
 Windows
 
 ``` shell
-set MIGRATABLE=host=127.0.0.1 port=5432 dbname=example user=example password=example sslmode=disable
+set MIGRATABLE=host=127.0.0.1 port=5432 dbname=example search_path=example user=example password=example sslmode=disable
 ```
 
-Note that the Windows version does _not_ include double-quotes.
+- The login, database, and schema must already exist
+- The `search_path` parameter is the database schema
+- The Windows version does _not_ include double-quotes
 
 ### Command arguments
 
@@ -104,6 +136,16 @@ Note that the Windows version does _not_ include double-quotes.
 - `next` - roll forward one migration
 - `back` - roll backward one migration
 - `target` - target specific version
+
+Note that there is a distinction between rolling back all
+migrations using the `back` or `target 0` actions, as opposed
+to using `reset`.
+
+The former actions will undo all migrations as expected but
+will leave the history in the `migratable_state` tracking
+table. However using `reset` will drop that table when
+the rollbacks complete, removing all trace of _Migratable_
+and any migration history.
 
 ### Example commands
 
@@ -150,15 +192,24 @@ cd cmd
 scripts\windows
 ```
 
+If you make changes to Linux or Mac scripts within Windows
+and need to ensure the executable permission is set on them
+you can do it on the command line after committing them:
+
+```
+git update-index --chmod=+x scripts\linux.sh
+git update-index --chmod=+x scripts\mac.sh
+```
+
 ### One-off builds during development
 
 When development is completed you use the above-mentioned
 scripts to generate a full set of releases.
 
 However _during_ your development you probably want a quicker
-turnaround so from the following commands you can quickly
-create a new  version by picking according to your _current_
-system.
+turnaround so from the following commands you can create a new
+version as a one-off by (choose according to _your current_
+system).
 
 ``` shell
 cd cmd

@@ -1,3 +1,6 @@
+# Mac script to build for supported platforms.
+# AGPL license. Copyright 2024 K Cartlidge.
+
 echo Building Linux edition
 env GOOS=linux GOARCH=amd64 go build -o ../builds/linux/migratable
 

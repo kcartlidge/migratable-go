@@ -1,3 +1,6 @@
+# Linux script to build for supported platforms.
+# AGPL license. Copyright 2024 K Cartlidge.
+
 echo Building Windows edition
 env GOOS=windows GOARCH=amd64 go build -o ../builds/windows/migratable.exe
 

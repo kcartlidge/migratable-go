@@ -1,3 +1,6 @@
+// Migrations collection.
+// AGPL license. Copyright 2024 K Cartlidge.
+
 package main
 
 import (
@@ -22,7 +25,7 @@ type migration struct {
 func loadMigrations(folder string) (*migrations, error) {
 	ms := migrations{}
 
-	fmt.Println("READING")
+	fmt.Println("MIGRATIONS")
 
 	// Scan for migrations folders.
 	if ok, err := exists(folder); !ok || (err != nil) {
@@ -66,7 +69,7 @@ func loadMigrations(folder string) (*migrations, error) {
 		}
 		m := migration{
 			Version: v,
-			Name:    string(name),
+			Name:    f,
 			Up:      sqlUp,
 			Down:    sqlDn,
 		}
@@ -86,4 +89,15 @@ func loadMigrations(folder string) (*migrations, error) {
 	}
 
 	return &ms, nil
+}
+
+// getHighest returns the highest numbered migration's version (or 0).
+func (m *migrations) getHighest() int {
+	return len(*m)
+}
+
+// getMigration returns the given migration.
+// It assumes the index is valid; check before calling.
+func (m *migrations) getMigration(i int) migration {
+	return (*m)[i]
 }

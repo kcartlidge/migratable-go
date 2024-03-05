@@ -1,8 +1,13 @@
+// PostgreSQL data access.
+// AGPL license. Copyright 2024 K Cartlidge.
+
 package main
 
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
@@ -30,19 +35,26 @@ func (d *dbPostgres) ensureMigrationsTable() error {
 CREATE TABLE IF NOT EXISTS migratable_state
 (
 	id             BIGSERIAL                NOT NULL,
-	version_number INT,
+	target_version INT,
+	direction      CHARACTER VARYING(4)     NOT NULL,
+	migration      CHARACTER VARYING(200)   NOT NULL,
 	actioned       TIMESTAMP WITH TIME ZONE NOT NULL,
 	PRIMARY KEY    (id)
 )
 `
-	_, err := d.connection.Exec(stmt)
-	return err
+	return d.exec(stmt)
+}
+
+// removeMigrationsTable drops the `migratable_state` table.
+func (d *dbPostgres) removeMigrationsTable() error {
+	stmt := `DROP TABLE IF EXISTS migratable_state`
+	return d.exec(stmt)
 }
 
 // getCurrentVersion retrieves the version number (0+).
 func (d *dbPostgres) getCurrentVersion() (int, error) {
 	stmt := `
-SELECT version_number FROM migratable_state
+SELECT target_version FROM migratable_state
  ORDER BY id DESC LIMIT 1
 `
 	v := 0
@@ -52,4 +64,42 @@ SELECT version_number FROM migratable_state
 		}
 	}
 	return v, nil
+}
+
+// execMigration executes the migration and updates the
+// `migratable_state` table accordingly in a transaction.
+func (d *dbPostgres) execMigration(statement string, setVersion int, name string, direction string) error {
+	// No SQL injection risk as parameter is pre-validated.
+	name = limitTo(slugify(name), 200)
+	mtSql := fmt.Sprintf(
+		"INSERT INTO migratable_state (direction, target_version, migration, actioned) VALUES ('%s',%d,'%s',NOW())",
+		direction, setVersion, name)
+	return d.exec(statement, mtSql)
+}
+
+// exec executes the given SQL statement(s) in a transaction.
+func (d *dbPostgres) exec(statement ...string) error {
+	var err error
+	var tx *sql.Tx
+
+	// Start a transaction (to allow for multiple statements).
+	if tx, err = d.connection.Begin(); err != nil {
+		return err
+	}
+
+	// Action each statement.
+	for i := range statement {
+		if _, err = tx.Exec(statement[i]); err != nil {
+			pgErr, ok := err.(*pq.Error)
+			_ = tx.Rollback()
+			if ok {
+				return errors.New(pgErr.Error())
+			}
+			return errors.New("unknown error executing statement")
+		}
+	}
+
+	// Done.
+	err = tx.Commit()
+	return err
 }

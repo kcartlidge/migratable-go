@@ -1,3 +1,6 @@
+@rem Windows script to build for supported platforms.
+@rem AGPL license. Copyright 2024 K Cartlidge.
+
 @echo off
 @echo Building Linux edition
 @set GOOS=linux

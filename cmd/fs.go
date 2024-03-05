@@ -1,3 +1,6 @@
+// File-system routines.
+// AGPL license. Copyright 2024 K Cartlidge.
+
 package main
 
 import (
