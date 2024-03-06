@@ -1,6 +1,11 @@
 # CHANGELOG
 
-- 2024-03-05 **`v1.0.0`**
+- 2024-03-06 **`v1.0.0`**
+  - Windows build script sets executable attributes in git
+    - Linux, Mac, and Windows builds
+    - Linux, Mac, and Windows scripts
+
+- 2024-03-05
   - Perform migrations
     - PostgreSQL only currently
     - Roll forward or backward

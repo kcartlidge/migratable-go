@@ -21,3 +21,16 @@
 @set GOOS=windows
 @set GOARCH=amd64
 @go build -o ../builds/windows/migratable.exe
+
+@echo.
+@echo Windows does not use executable file attributes:
+@echo * Setting builds to executable in git
+@git update-index --chmod=+x ../builds/linux/migratable
+@git update-index --chmod=+x ../builds/macos-x64/migratable
+@git update-index --chmod=+x ../builds/macos/migratable
+@git update-index --chmod=+x ../builds/windows/migratable.exe
+
+@echo * Ensuring builds scripts remain executable in git
+@git update-index --chmod=+x ./scripts/linux.sh
+@git update-index --chmod=+x ./scripts/mac.sh
+@git update-index --chmod=+x ./scripts/windows.bat
