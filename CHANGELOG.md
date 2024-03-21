@@ -1,5 +1,9 @@
 # CHANGELOG
 
+- 2024-03-21 **`v2.0.0`**
+  - Space-delimited version/name
+  - Tidy the output
+
 - 2024-03-06 **`v1.0.0`**
   - Windows build script sets executable attributes in git
     - Linux, Mac, and Windows builds

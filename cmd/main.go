@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 var db idb
@@ -21,30 +23,31 @@ func main() {
 	// Gather the user request.
 	c, err := getConfig()
 	if err == nil {
+		fmt.Println()
 		c.describe()
 
-		// Fetch the migrations.
-		var m *migrations
-		m, err = loadMigrations(c.folder)
-		if err == nil {
-			fmt.Printf("  Found %v\n", len(*m))
+		// Get a database connection.
+		connStr := os.Getenv(c.connEnv)
+		if len(connStr) == 0 {
+			err = errors.New("cannot read the environment variable")
+		} else {
+			db = &dbPostgres{}
+			err = ensureDB(db, connStr)
+			if err == nil {
 
-			// Get a database connection.
-			connStr := os.Getenv(c.connEnv)
-			if len(connStr) == 0 {
-				err = errors.New("cannot read the environment variable")
-			} else {
-				fmt.Println()
-				fmt.Println("INFO")
-				db = &dbPostgres{}
-				err = ensureDB(db, connStr)
+				// Get the current version.
+				var version = 0
+				version, err = db.getCurrentVersion()
 				if err == nil {
 
-					// Show the current state.
-					var version = 0
-					version, err = db.getCurrentVersion()
+					// Fetch the migrations.
+					var m *migrations
+					m, err = loadMigrations(c.folder, version)
 					if err == nil {
-						fmt.Println("  Database is at migration version", version)
+						fmt.Printf("  Found %v\n", len(*m))
+
+						// Show the current state.
+						displayStatus(m, version)
 
 						// Work out what to do and do it.
 						if c.action != "info" {
@@ -70,7 +73,6 @@ func main() {
 								target = c.target
 								break
 							}
-							fmt.Println("  Targeting migration version", target)
 
 							// Sanity check.
 							if target < 0 || target > m.getHighest() {
@@ -80,10 +82,8 @@ func main() {
 									err = errors.New("already at the requested version")
 								} else {
 									if version != target {
-										fmt.Println("  Migrating from", version, "to", target)
+										section(fmt.Sprintf("MIGRATING FROM %v TO %v", version, target))
 									}
-									fmt.Println()
-									fmt.Println("APPLYING")
 
 									// Roll forward through all required migrations.
 									// Goes from the next to the desired by executing
@@ -91,7 +91,7 @@ func main() {
 									if target > version {
 										for i := version + 1; i <= target; i++ {
 											mi := m.getMigration(i)
-											fmt.Println(fmt.Sprintf("  UP: %s", mi.Name))
+											fmt.Println(fmt.Sprintf("  Migrating UP: %s", mi.Display))
 											err = db.execMigration(mi.Up, i, mi.Name, "UP")
 											if err != nil {
 												break
@@ -105,7 +105,7 @@ func main() {
 									if target < version {
 										for i := version; i > target; i-- {
 											mi := m.getMigration(i)
-											fmt.Println(fmt.Sprintf("  DOWN: %s", mi.Name))
+											fmt.Println(fmt.Sprintf("  Migrating DOWN: %s", mi.Display))
 											err = db.execMigration(mi.Down, i-1, mi.Name, "DOWN")
 											if err != nil {
 												break
@@ -116,14 +116,15 @@ func main() {
 									// Show the result.
 									version, err = db.getCurrentVersion()
 									if err == nil {
-										fmt.Println("  Database is at migration version", version)
-									}
-
-									// Remove the table if a `reset` was requested.
-									if c.action == "reset" {
-										err = db.removeMigrationsTable()
-										if err == nil {
-											fmt.Println("  Table `migratable_state` removed")
+										// Remove the table if a `reset` was requested.
+										if c.action == "reset" {
+											err = db.removeMigrationsTable()
+											if err == nil {
+												fmt.Println()
+												fmt.Println("Table `migratable_state` removed")
+											}
+										} else {
+											displayStatus(m, version)
 										}
 									}
 								}
@@ -143,7 +144,26 @@ func main() {
 		fmt.Println()
 	} else {
 		fmt.Println()
-		fmt.Println("Done.")
+		fmt.Println("Done")
 		fmt.Println()
+	}
+}
+
+// displayStatus shows the migrations with a marker
+// for where the current version is.
+func displayStatus(m *migrations, version int) {
+	section("MIGRATION STATUS")
+	h := m.getHighest()
+	w := len(strconv.Itoa(h))
+	here := strings.Repeat("-", w+1) + "> *"
+	if version < 1 {
+		fmt.Println(here)
+	}
+	for i := 1; i <= h; i++ {
+		om := (*m)[i]
+		fmt.Println(fmt.Sprintf("  %s", om.Display))
+		if om.Version == version {
+			fmt.Println(here)
+		}
 	}
 }

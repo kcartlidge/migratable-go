@@ -34,10 +34,10 @@ type idb interface {
 func ensureDB(db idb, connStr string) error {
 	err := db.connect(connStr)
 	if err == nil {
-		fmt.Println("  Connected to the database")
+		fmt.Println("Connected to the database")
 		err = db.ensureMigrationsTable()
 		if err == nil {
-			fmt.Println("  Table migratable_state exists")
+			fmt.Println("Table migratable_state exists")
 		}
 	}
 	return err

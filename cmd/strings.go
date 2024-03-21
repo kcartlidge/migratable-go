@@ -4,26 +4,21 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 )
 
-const valid = "abcdefghijklmnopqrstuvwxyz+!&,()0123456789"
-
-// slugify converts text to a URL-friendly slug.
-func slugify(original string) string {
-	r := ""
-	l := ""
-	for _, ru := range strings.ToLower(original) {
-		c := string(ru)
-		if strings.Index(valid, c) > -1 {
-			r = r + c
-			l = c
-		} else if l != "-" {
-			r = r + "-"
-			l = "-"
-		}
+// section writes a section header to the output.
+func section(content string) {
+	minwid := 40
+	wid := len(content)
+	if wid < minwid {
+		wid = minwid
 	}
-	return strings.TrimPrefix(strings.TrimSuffix(r, "-"), "-")
+	fmt.Println()
+	fmt.Println()
+	fmt.Println(content)
+	fmt.Println(strings.Repeat("=", wid))
 }
 
 // limitTo forces the string to fit the length constraint provided.

@@ -1,15 +1,26 @@
-# MIGRATABLE v1.0.0
+# MIGRATABLE v2.0.0
 
 **Command-line database migrations using up/down SQL files.
 Simple, with stand-alone executables small enough to commit
 to your own repos alongside your code.**
 
-_The initial release is for PostgreSQL only._
+_Currently supports PostgreSQL only._
 
+- Pre-built binaries; not dependent on Go
+- Fits any ecosystem (eg Go, Python, Node, .Net etc)
+- Easy to configure, needing only:
+  - A connection string in an environment variable
+  - A folder with named migrations using up/down SQL scripts
+- Your database structure is version-control-able
+- Roll your database backwards or forwards
+- Runs in transactions for atomic up/down
+- Seed/pre-populate, update, or remove data
 - [AGPL license](./LICENSE.txt)
 - [CHANGELOG](./CHANGELOG.md)
 
-Copyright 2024 K Cartlidge.
+Copyright 2024 [K Cartlidge](https://kcartlidge.com).
+
+---
 
 ## Contents
 
@@ -21,8 +32,8 @@ Copyright 2024 K Cartlidge.
   - [Command arguments](#command-arguments)
   - [Supported actions](#supported-actions)
   - [Example commands](#example-commands)
-- [Generating new builds](#generating-new-builds)
-  - [Creating new releases](#creating-new-releases)
+- [Generating new builds (optional)](#generating-new-builds-optional)
+  - [Creating the new releases](#creating-the-new-releases)
   - [One-off builds during development](#one-off-builds-during-development)
 
 ## About database migrations
@@ -44,31 +55,29 @@ Once you have reached the point where you are dealing with real
 data you use it for structural changes like adding indexes or
 extra columns, or for adding things to look-up lists etc.
 
-- Pre-built binaries; not dependent on Go
-- It fits any ecosystem (eg Go, Python, Node, .Net etc)
-- And it's easy to configure, needing only:
-  - A connection string in an environment variable
-  - A folder with named migrations using up/down SQL scripts
-- Your database structure can be version-controlled
-- Roll your database backwards as well as forwards
-- Seed/pre-populate, update, or remove data
-- Run in transactions for atomic up/down
+**Important:** Any database changes that occur _outside_ of the
+migration scripts are invisible to Migratable.  This means if
+you make manual changes (for instance) to the state of things
+managed by Migratable then migrations may start to fail as
+the inbuilt assumptions of the up/down scripts might no longer
+be valid.
 
 ### Example migration scripts structure
 
 ```
 /migrations
-  /001_create_accounts_table
+  /001 Create accounts table
     down.sql
     up.sql
-  /002_add_Sample_data
+  /002 Add sample data
     down.sql
     up.sql
 ```
 
 The migration version (the leading digits in the folder name)
-can be separated from the migration name that follows by any
-non-digit character. Leading zeroes are optional.
+is separated from the migration name that follows by one or
+more spaces. Leading zeroes are optional, and you can still
+include spaces in the name portion.
 
 There's a set of [example migrations](./cmd/sample-migrations)
 in the project.
@@ -164,24 +173,25 @@ passed in will be treated as such when checking.
 
 ---
 
-## Generating new builds
+## Generating new builds (optional)
 
-_This should only be necessary if you are making changes
+**_This should only be necessary if you are making changes
 to Migratable itself.  As a user of Migratable you can
-use the existing builds mentioned earlier._
+use the existing builds mentioned earlier._**
 
 **Note:** if you are unable to run the scripts ensure they
 are executable (on Linux or Mac) by using `chmod`.  For example
 `chmod +x cmd/scripts/linux.sh` will do the Linux one.
 
-- There are scripts for Linux, Windows, Mac (Intel), and Mac (ARM)
+- There are scripts for Linux, Windows, Mac (Intel/ARM)
 - Run the script that relates to _your_ current platform
 - Each script generates the builds for _all_ the platforms
+  - There's only one Mac script but separate builds are created
 - You _must_ run the scripts from within the `cmd` folder
 - Builds are small and should be checked in
   - Only generate new builds when new releases are needed
 
-### Creating new releases
+### Creating the new releases
 
 Run the relevant script for _your_ system.
 
@@ -192,14 +202,17 @@ cd cmd
 scripts\windows
 ```
 
-If you make changes to Linux or Mac scripts within Windows
-and need to ensure the executable permission is set on them
-you can do it on the command line after committing them:
+If you make changes to the Linux or Mac scripts within Windows,
+you may need to ensure the executable permission is set on them.
+You can do this on the command line after committing them:
 
-```
+``` shell
 git update-index --chmod=+x scripts\linux.sh
 git update-index --chmod=+x scripts\mac.sh
 ```
+
+_If you use the Windows build script mentioned above then
+this will be done for you automatically._
 
 ### One-off builds during development
 
@@ -208,7 +221,7 @@ scripts to generate a full set of releases.
 
 However _during_ your development you probably want a quicker
 turnaround so from the following commands you can create a new
-version as a one-off by (choose according to _your current_
+version as a one-off (choose according to _your current_
 system).
 
 ``` shell
@@ -217,4 +230,12 @@ go build -o ../builds/macos/migratable
 go build -o ../builds/macos-x64/migratable
 go build -o ../builds/linux/migratable
 go build -o ..\builds\windows\migratable.exe
+```
+
+You can combine these with the commands to run Migratable,
+giving you a single command line. Here's a Windows example:
+
+``` shell
+cd cmd
+go build -o ..\builds\windows\migratable.exe && ..\builds\windows\migratable.exe sample-migrations MIGRATABLE reset
 ```

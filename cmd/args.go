@@ -39,10 +39,18 @@ func getConfig() (*config, error) {
 	// Check the requested action.
 	switch c.action {
 	case "info":
+		fallthrough
 	case "reset":
+		fallthrough
 	case "latest":
+		fallthrough
 	case "next":
+		fallthrough
 	case "back":
+		// Further sanity checks as should not have a target version.
+		if len(os.Args) > 4 {
+			return nil, errors.New("unexpected extra argument(s)")
+		}
 		break
 	case "target":
 		// Further sanity checks as need a target version.
@@ -66,29 +74,29 @@ func getConfig() (*config, error) {
 
 // usage displays the command line instructions.
 func (c *config) usage() {
-	fmt.Println("USAGE")
+	fmt.Println("USAGE:")
 	fmt.Println("  <folder>   Location of your migration scripts")
 	fmt.Println("  <conn-env> Environment variable holding connection string")
 	fmt.Println("  <action>   Migration action to perform")
 	fmt.Println("  [version]  Migration number (if required)")
 	fmt.Println()
-	fmt.Println("ACTIONS")
+	fmt.Println("ACTIONS:")
 	fmt.Println("  info       Show migration status")
 	fmt.Println("  reset      Remove all migrations")
 	fmt.Println("  latest     Apply new migrations")
 	fmt.Println("  next       Roll forward one migration")
 	fmt.Println("  back       Roll backward one migration")
 	fmt.Println("  target     Target specific [version]")
-	fmt.Println()
 }
 
 // describe details what has been requested.
 func (c *config) describe() {
-	fmt.Println("REQUESTED")
-	fmt.Println("  Action:   ", c.action)
+	section("REQUESTED")
+	fmt.Println("  Folder   : ", c.folder)
+	fmt.Println("  Conn Env : ", c.connEnv)
+	fmt.Println("  Action   : ", c.action)
 	if c.action == "target" {
 		fmt.Println("  Version:  ", c.target)
 	}
-	fmt.Println("  Folder:   ", c.folder)
 	fmt.Println()
 }

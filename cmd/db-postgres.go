@@ -70,7 +70,7 @@ SELECT target_version FROM migratable_state
 // `migratable_state` table accordingly in a transaction.
 func (d *dbPostgres) execMigration(statement string, setVersion int, name string, direction string) error {
 	// No SQL injection risk as parameter is pre-validated.
-	name = limitTo(slugify(name), 200)
+	name = limitTo(name, 200)
 	mtSql := fmt.Sprintf(
 		"INSERT INTO migratable_state (direction, target_version, migration, actioned) VALUES ('%s',%d,'%s',NOW())",
 		direction, setVersion, name)
