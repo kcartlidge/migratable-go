@@ -17,7 +17,7 @@ func main() {
 
 	// Welcome.
 	fmt.Println()
-	fmt.Println("MIGRATABLE v1.0.0")
+	fmt.Println("MIGRATABLE v2.0.1")
 	fmt.Println()
 
 	// Gather the user request.
@@ -113,18 +113,20 @@ func main() {
 										}
 									}
 
-									// Show the result.
-									version, err = db.getCurrentVersion()
 									if err == nil {
-										// Remove the table if a `reset` was requested.
-										if c.action == "reset" {
-											err = db.removeMigrationsTable()
-											if err == nil {
-												fmt.Println()
-												fmt.Println("Table `migratable_state` removed")
+										// Show the result.
+										version, err = db.getCurrentVersion()
+										if err == nil {
+											// Remove the table if a `reset` was requested.
+											if c.action == "reset" {
+												err = db.removeMigrationsTable()
+												if err == nil {
+													fmt.Println()
+													fmt.Println("Table `migratable_state` removed")
+												}
+											} else {
+												displayStatus(m, version)
 											}
-										} else {
-											displayStatus(m, version)
 										}
 									}
 								}

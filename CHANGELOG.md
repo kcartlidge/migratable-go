@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- 2024-03-24 **`v2.0.1`**
+  - Fix: display migration execution error
+
 - 2024-03-21 **`v2.0.0`**
   - Space-delimited version/name
   - Tidy the output

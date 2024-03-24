@@ -1,4 +1,4 @@
-# MIGRATABLE v2.0.0
+# MIGRATABLE v2.0.1
 
 **Command-line database migrations using up/down SQL files.
 Simple, with stand-alone executables small enough to commit
