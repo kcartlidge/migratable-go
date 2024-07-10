@@ -1,4 +1,4 @@
-# MIGRATABLE v2.0.1
+# MIGRATABLE v2.0.2
 
 **Command-line database migrations using up/down SQL files.
 Simple, with stand-alone executables small enough to commit
@@ -130,6 +130,21 @@ set MIGRATABLE=host=127.0.0.1 port=5432 dbname=example search_path=example user=
 - The `search_path` parameter is the database schema
 - The Windows version does _not_ include double-quotes
 
+## Running Migratable
+
+If you're on Linux or Mac you may need to set Migratable
+as an executable first:
+
+``` shell
+chmod +x migratable
+```
+
+From the command line, run it like this:
+
+``` shell
+migratable <folder> <conn-env> <action> [version]
+```
+
 ### Command arguments
 
 - `<folder>` - location of your migration scripts
@@ -237,5 +252,5 @@ giving you a single command line. Here's a Windows example:
 
 ``` shell
 cd cmd
-go build -o ..\builds\windows\migratable.exe && ..\builds\windows\migratable.exe sample-migrations MIGRATABLE reset
+go build -o ..\builds\windows\migratable.exe && ..\builds\windows\migratable.exe sample-migrations MIGRATABLE info
 ```

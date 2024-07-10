@@ -1,5 +1,10 @@
 # CHANGELOG
 
+- 2024-07-10 **`v2.0.2`**
+  - Relocated `go.mod` and `go.sum`
+  - Improved README and run-time argument details
+  - Warning if no `here` was shown on status list
+
 - 2024-03-24 **`v2.0.1`**
   - Fix: display migration execution error
 

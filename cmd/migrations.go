@@ -26,8 +26,6 @@ type migration struct {
 func loadMigrations(folder string, version int) (*migrations, error) {
 	ms := migrations{}
 
-	section("MIGRATIONS")
-
 	// Scan for migrations folders.
 	if ok, err := exists(folder); !ok || (err != nil) {
 		return nil, errors.New("cannot read migrations folder")

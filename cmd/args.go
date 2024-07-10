@@ -87,6 +87,12 @@ func (c *config) usage() {
 	fmt.Println("  next       Roll forward one migration")
 	fmt.Println("  back       Roll backward one migration")
 	fmt.Println("  target     Target specific [version]")
+	fmt.Println()
+	fmt.Println("EXAMPLES:")
+	fmt.Println("  migratable my-migrations MY_CONNSTR info")
+	fmt.Println("  migratable my-migrations MY_CONNSTR latest")
+	fmt.Println("  migratable my-migrations MY_CONNSTR target 4")
+	fmt.Println("  migratable my-migrations MY_CONNSTR reset")
 }
 
 // describe details what has been requested.

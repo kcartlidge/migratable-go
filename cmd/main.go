@@ -17,7 +17,8 @@ func main() {
 
 	// Welcome.
 	fmt.Println()
-	fmt.Println("MIGRATABLE v2.0.1")
+	fmt.Println("MIGRATABLE v2.0.2")
+	fmt.Println("Postgres Migrations Tool")
 	fmt.Println()
 
 	// Gather the user request.
@@ -44,7 +45,7 @@ func main() {
 					var m *migrations
 					m, err = loadMigrations(c.folder, version)
 					if err == nil {
-						fmt.Printf("  Found %v\n", len(*m))
+						fmt.Printf("Migrations loaded (x%v)\n", len(*m))
 
 						// Show the current state.
 						displayStatus(m, version)
@@ -158,6 +159,7 @@ func displayStatus(m *migrations, version int) {
 	h := m.getHighest()
 	w := len(strconv.Itoa(h))
 	here := strings.Repeat("-", w+1) + "> *"
+	shown := false
 	if version < 1 {
 		fmt.Println(here)
 	}
@@ -165,7 +167,12 @@ func displayStatus(m *migrations, version int) {
 		om := (*m)[i]
 		fmt.Println(fmt.Sprintf("  %s", om.Display))
 		if om.Version == version {
+			shown = true
 			fmt.Println(here)
 		}
+	}
+	if !shown {
+		fmt.Println()
+		fmt.Println("Are these the correct migrations for this database?")
 	}
 }
