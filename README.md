@@ -99,6 +99,9 @@ of the download into any repo/codebase that is using it and
 thereby guarantee it will always be available to your code
 and any build tool-chain.
 
+You can also place it into any location included in your `PATH`
+so it's always available (eg `/usr/local/bin` on a Mac).
+
 ## Usage
 
 - Place your connection string into an environment variable
@@ -144,6 +147,11 @@ From the command line, run it like this:
 ``` shell
 migratable <folder> <conn-env> <action> [version]
 ```
+
+If you are running on Mac note that the binary is not signed so
+it will refuse to run, giving you the option to remove it instead.
+If that happens open *System Settings*, *Privacy & Security*, *Security*.
+There you'll see an option has appeared to allow Migratable to run; enable it then try again and you'll gain the option to *Open* it now (this 'unlocking' is only required once).
 
 ### Command arguments
 
